@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>Ra.HttpClient</RootNamespace>
+    <AssemblyName>Ra.HttpClient</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>Ra.HttpClient</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Brian Taylor</Authors>
+    <Description>A direct (non-anonymized) HTTP/HTTPS client for the RA / 1M5 ecosystem.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/resolvingarchitecture/http-client-cs</RepositoryUrl>
+    <PackageTags>http;https;network;1m5;resolving-architecture</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\common\ra-common-cs\src\RaCommon\RaCommon.csproj" />
+  </ItemGroup>
+
+</Project>

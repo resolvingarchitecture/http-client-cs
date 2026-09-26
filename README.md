@@ -51,6 +51,24 @@ monorepo-dependency convention. Two of the nine tests make live HTTPS/HTTP
 requests to `resolvingarchitecture.io` and skip cleanly (pass without
 asserting) if there's no outbound network — see `HttpClientServiceTests.cs`.
 
+## Identity metadata leaks
+
+Checked 2026-09-26, after the same class of bug was found and fixed in
+`http-client-java`/`-cpp`/`-python`/`1m5-remnant`'s Android `TorClient`, and
+flagged (not yet fixed) in `-go`/`-rust`/`-ts`: unlike every one of those,
+**this client has no default-`User-Agent` leak to fix** -
+`System.Net.Http.HttpClient` does not inject any default `User-Agent` of its
+own (a well-documented .NET behavior, the opposite gotcha from most other
+stacks: some servers reject a request with *no* `User-Agent` at all, which
+is why .NET developers often have to add one explicitly). Since this
+client, like the others, only sets `User-Agent` when the caller's
+`Envelope` supplies one, a request with none set genuinely sends none here
+- no identifying default to leak. One thing still open: `HttpClientHandler.Proxy`/`WebProxy`
+is an HTTP CONNECT-style proxy abstraction with no native SOCKS5 support, so
+this client cannot yet correctly reach a SOCKS5-only relay like
+`tor-client-java`'s `TorSocksRelay` at all - see `DESIGN.md` "Identity
+metadata leaks".
+
 ## Status
 
 Client only — GET/POST/PUT/DELETE, HTTP and HTTPS (via the BCL

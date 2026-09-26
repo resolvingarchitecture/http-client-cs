@@ -103,6 +103,36 @@ observer into `ra-common-cs` is TODO, shared with `tor-client-cs`/`i2p-cs`.
 - **Proxy** via `HttpClientHandler.Proxy` (a `WebProxy`), OkHttp's
   `Proxy`-on-the-builder equivalent.
 
+## Identity metadata leaks
+
+Required standard for any HTTP client this project relies on for anonymized
+traffic (Tor/I2P), enforced here and checked against every sibling
+`http-client-*` port: no default header, response header, or connection
+behavior may reveal more about the requester than it has to.
+
+- **Confirmed safe, 2026-09-26**: unlike `http-client-java` (OkHttp's own
+  `User-Agent: okhttp/<version>` default, confirmed via bytecode),
+  `http-client-cpp`/`http-client-python` (both previously defaulted to the
+  project-identifying literal `"ra-http-client"`, since fixed), and
+  `http-client-go`/`-rust`/`-ts` (flagged, not yet fixed, for their own
+  stdlib/library defaults), `System.Net.Http.HttpClient` injects no default
+  `User-Agent` of its own - a well-documented .NET behavior. Since this
+  client only sets `User-Agent` when the caller's `Envelope` supplies one
+  (see "Message flow" above), a request with none set genuinely sends none
+  - nothing to fix here.
+- **Not yet verified**: `HttpClientHandler.Proxy`/`WebProxy` is an HTTP
+  CONNECT-style proxy abstraction with no native SOCKS5 client support in
+  the BCL. This client likely cannot reach a SOCKS5-only relay like
+  `tor-client-java`'s `TorSocksRelay` at all today - a functional gap, not
+  a metadata leak, but one that would need closing (e.g. wrapping
+  `tor-client-cs`'s own already-hand-rolled `Socks5.cs`, mirroring how
+  `http-client-cpp`'s `socks5.hpp` is a standalone SOCKS5 client) before
+  this client could route anything through Tor. Not attempted here.
+- **No server/inbound half** (see "Not here" below), so the third known
+  leak shape - a server-identifying response header, found and fixed in
+  `http-client-java`'s Jetty listener (`Server: Jetty(<version>)`) - doesn't
+  apply yet. Check for it if inbound hosting is ever built.
+
 ## Not here
 
 - Inbound HTTP server hosting: the Java original's Jetty-based

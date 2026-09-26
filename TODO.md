@@ -1,5 +1,14 @@
 # TODO
 
+- [x] **Identity metadata leak check, done 2026-09-26**: confirmed
+      `System.Net.Http.HttpClient` sets no default `User-Agent` (unlike the
+      other language ports) - see DESIGN.md "Identity metadata leaks".
+      Nothing to fix here.
+- [ ] **Real SOCKS5 support, required before any Tor use** - `HttpClientHandler.Proxy`/
+      `WebProxy` has no native SOCKS5 client; this can't reach a SOCKS5-only
+      relay like `TorSocksRelay` today. See DESIGN.md "Identity metadata
+      leaks" - `tor-client-cs`'s own `Socks5.cs` is the reference for what a
+      real implementation looks like.
 - [ ] Async `SendOutAsync` (currently synchronous `HttpClient.Send`).
 - [ ] `NetworkConnectionReport` + status-observer wiring in `ra-common-cs`,
       then use it here instead of the envelope-header-only blocked-response
